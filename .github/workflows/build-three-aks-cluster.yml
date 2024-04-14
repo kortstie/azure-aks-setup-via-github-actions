@@ -35,7 +35,6 @@ jobs:
               --enable-app-routing \
               --tier free
 
-jobs:
     build-acr-image-registry:
         runs-on: ubuntu-latest
         steps:
