@@ -7,7 +7,7 @@ env:
   ACR_NAME: ${{ vars.PROJECT_NAME }}acr
   
 jobs:
-    build-cluster-dev:
+    create-cluster-dev:
         runs-on: ubuntu-latest
         steps:
 
@@ -23,16 +23,71 @@ jobs:
           uses: azure/cli@v2
           with:
             inlineScript: |
-              az aks create \
+              az aks list --resource-group ${RESOURCE_GROUP} --output table | grep ${AKS_CLUSTER_NAME}_test || az aks create \
               --resource-group ${RESOURCE_GROUP} \
-              --no-ssh-key \
-              --name ${AKS_CLUSTER_NAME}_prod \
+              --generate-ssh-keys \
+              --name ${AKS_CLUSTER_NAME}_dev \
               --node-count 3 \
-              --zones 1 2 3
+              --zones 1 2 3 \
               --node-vm-size Standard_B2s \
               --network-plugin azure \
               --enable-app-routing \
               --tier free
+              
+    create-cluster-test:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: 'Checkout this GitHub repo'
+          uses: actions/checkout@main
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v2
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        - name: 'Create aks cluster TEST'
+          uses: azure/cli@v2
+          with:
+            inlineScript: |
+              az aks list --resource-group ${RESOURCE_GROUP} --output table | grep ${AKS_CLUSTER_NAME}_test || az aks create \
+              --resource-group ${RESOURCE_GROUP} \
+              --generate-ssh-keys \
+              --name ${AKS_CLUSTER_NAME}_test \
+              --node-count 3 \
+              --zones 1 2 3 \
+              --node-vm-size Standard_B2s \
+              --network-plugin azure \
+              --enable-app-routing \
+              --tier free
+
+    create-cluster-prod:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: 'Checkout this GitHub repo'
+          uses: actions/checkout@main
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v2
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        - name: 'Create aks cluster PROD'
+          uses: azure/cli@v2
+          with:
+            inlineScript: |
+              az aks list --resource-group ${RESOURCE_GROUP} --output table | grep ${AKS_CLUSTER_NAME}_prod || az aks create \
+              --resource-group ${RESOURCE_GROUP} \
+              --generate-ssh-keys \
+              --name ${AKS_CLUSTER_NAME}_prod \
+              --node-count 3 \
+              --zones 1 2 3 \
+              --node-vm-size Standard_B2s \
+              --network-plugin azure \
+              --enable-app-routing \
+              --tier free
+
 
     build-acr-image-registry:
         runs-on: ubuntu-latest
@@ -51,5 +106,25 @@ jobs:
           with:
             inlineScript: |              
               az acr create --resource-group ${RESOURCE_GROUP}  --name $ACR_NAME --sku Basic
+    
+    connect-aks-to-acr:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: 'Checkout this GitHub repo'
+          uses: actions/checkout@main
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v2
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        - name: 'Install Azure CLI and create aks cluster'
+          uses: azure/cli@v2
+          with:
+            inlineScript: |                            
+              az aks update -n ${AKS_CLUSTER_NAME}_def -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
+              az aks update -n ${AKS_CLUSTER_NAME}_test -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
+              az aks update -n ${AKS_CLUSTER_NAME}_prod -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
              
 
