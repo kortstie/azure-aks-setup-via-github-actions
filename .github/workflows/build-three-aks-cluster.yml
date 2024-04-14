@@ -19,14 +19,14 @@ jobs:
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-        - name: 'Install Azure CLI and create aks cluster'
+        - name: 'Create aks cluster DEV'
           uses: azure/cli@v2
           with:
             inlineScript: |
               az aks create \
-              --resource-group $RESOURCE_GROUP \
+              --resource-group ${{ RESOURCE_GROUP }} \
               --generate-ssh-keys \
-              --name $AKS_CLUSTER_NAME \
+              --name ${{ AKS_CLUSTER_NAME }}_dev \
               --node-count 3 \
               --zones 1 2 3
               --generate-ssh-keys \
@@ -40,6 +40,6 @@ jobs:
           uses: azure/cli@v2
           with:
             inlineScript: |              
-              az acr create --resource-group $resource_group --name $ACR_NAME --sku Basic
+              az acr create --resource-group ${{ RESOURCE_GROUP }}  --name $ACR_NAME --sku Basic
              
 
