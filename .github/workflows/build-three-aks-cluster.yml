@@ -4,9 +4,7 @@ name: Linux_Container_Workflow
 env:
   RESOURCE_GROUP: ${{ vars.PROJECT_NAME }}rg
   AKS_CLUSTER_NAME: ${{ vars.PROJECT_NAME }}aks
-  CLUSTER_NAME: ${{ vars.PROJECT_NAME }}aks
   ACR_NAME: ${{ vars.PROJECT_NAME }}acr
-  LOCATION: germanywestcentral
   
 jobs:
     build-three-aks-cluster:
@@ -26,8 +24,8 @@ jobs:
           with:
             inlineScript: |
               az aks create \
-              --resource-group $resource_group \
-              --name $cluster_name \
+              --resource-group $RESOURCE_GROUP \
+              --name $AKS_CLUSTER_NAME \
               --node-count 3 \
               --zones 1 2 3
               --generate-ssh-keys \
@@ -40,6 +38,6 @@ jobs:
           uses: azure/cli@v2
           with:
             inlineScript: |              
-              az acr create --resource-group $resource_group --name $acr_name --sku Basic
+              az acr create --resource-group $resource_group --name $ACR_NAME --sku Basic
              
 
