@@ -24,9 +24,9 @@ jobs:
           with:
             inlineScript: |
               az aks create \
-              --resource-group ${{ RESOURCE_GROUP }} \
+              --resource-group ${RESOURCE_GROUP} \
               --generate-ssh-keys \
-              --name ${{ AKS_CLUSTER_NAME }}_dev \
+              --name ${AKS_CLUSTER_NAME}_dev \
               --node-count 3 \
               --zones 1 2 3
               --generate-ssh-keys \
@@ -40,6 +40,6 @@ jobs:
           uses: azure/cli@v2
           with:
             inlineScript: |              
-              az acr create --resource-group ${{ RESOURCE_GROUP }}  --name $ACR_NAME --sku Basic
+              az acr create --resource-group ${RESOURCE_GROUP}  --name $ACR_NAME --sku Basic
              
 
