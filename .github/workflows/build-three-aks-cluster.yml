@@ -124,7 +124,7 @@ jobs:
           uses: azure/cli@v2
           with:
             inlineScript: |                            
-              az aks update -n ${AKS_CLUSTER_NAME}_def -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
+              az aks update -n ${AKS_CLUSTER_NAME}_dev -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
               az aks update -n ${AKS_CLUSTER_NAME}_test -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
               az aks update -n ${AKS_CLUSTER_NAME}_prod -g  ${RESOURCE_GROUP} --attach-acr $ACR_NAME
              
