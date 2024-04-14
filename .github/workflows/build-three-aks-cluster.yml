@@ -25,7 +25,7 @@ jobs:
             inlineScript: |
               az aks create \
               --resource-group ${RESOURCE_GROUP} \
-              --generate-ssh-keys \
+              --no-ssh-key \
               --name ${AKS_CLUSTER_NAME}_dev \
               --node-count 3 \
               --zones 1 2 3
