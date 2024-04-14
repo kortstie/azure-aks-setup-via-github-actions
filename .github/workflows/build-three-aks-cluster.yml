@@ -23,7 +23,7 @@ jobs:
           uses: azure/cli@v2
           with:
             inlineScript: |
-              az aks list --resource-group ${RESOURCE_GROUP} --output table | grep ${AKS_CLUSTER_NAME}_test || az aks create \
+              az aks list --resource-group ${RESOURCE_GROUP} --output table | grep ${AKS_CLUSTER_NAME}_dev || az aks create \
               --resource-group ${RESOURCE_GROUP} \
               --generate-ssh-keys \
               --name ${AKS_CLUSTER_NAME}_dev \
@@ -109,6 +109,7 @@ jobs:
     
     connect-aks-to-acr:
         runs-on: ubuntu-latest
+        needs: [ create-cluster-dev, create-cluster-test, create-cluster-prod ]
         steps:
 
         - name: 'Checkout this GitHub repo'
