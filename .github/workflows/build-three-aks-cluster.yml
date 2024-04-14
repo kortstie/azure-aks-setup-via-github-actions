@@ -1,0 +1,45 @@
+on: [push]
+name: Linux_Container_Workflow
+
+env:
+  RESOURCE_GROUP: ${{ vars.PROJECT_NAME }}rg
+  AKS_CLUSTER_NAME: ${{ vars.PROJECT_NAME }}aks
+  CLUSTER_NAME: ${{ vars.PROJECT_NAME }}aks
+  ACR_NAME: ${{ vars.PROJECT_NAME }}acr
+  LOCATION: germanywestcentral
+  
+jobs:
+    build-three-aks-cluster:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: 'Checkout this GitHub repo'
+          uses: actions/checkout@main
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v2
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+        - name: 'Install Azure CLI and create aks cluster'
+          uses: azure/cli@v2
+          with:
+            inlineScript: |
+              az aks create \
+              --resource-group $resource_group \
+              --name $cluster_name \
+              --node-count 3 \
+              --zones 1 2 3
+              --generate-ssh-keys \
+              --node-vm-size Standard_B2s \
+              --network-plugin azure \
+              --enable-app-routing \
+              --tier free
+
+        - name: 'Install Azure CLI and create aks cluster'
+          uses: azure/cli@v2
+          with:
+            inlineScript: |              
+              az acr create --resource-group $resource_group --name $acr_name --sku Basic
+             
+
