@@ -26,10 +26,9 @@ jobs:
               az aks create \
               --resource-group ${RESOURCE_GROUP} \
               --no-ssh-key \
-              --name ${AKS_CLUSTER_NAME}_test \
+              --name ${AKS_CLUSTER_NAME}_prod \
               --node-count 3 \
               --zones 1 2 3
-              --generate-ssh-keys \
               --node-vm-size Standard_B2s \
               --network-plugin azure \
               --enable-app-routing \
