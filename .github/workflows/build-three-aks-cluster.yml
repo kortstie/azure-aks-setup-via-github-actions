@@ -7,7 +7,7 @@ env:
   ACR_NAME: ${{ vars.PROJECT_NAME }}acr
   
 jobs:
-    build-three-aks-cluster:
+    build-cluster-dev:
         runs-on: ubuntu-latest
         steps:
 
@@ -26,7 +26,7 @@ jobs:
               az aks create \
               --resource-group ${RESOURCE_GROUP} \
               --no-ssh-key \
-              --name ${AKS_CLUSTER_NAME}_dev \
+              --name ${AKS_CLUSTER_NAME}_test \
               --node-count 3 \
               --zones 1 2 3
               --generate-ssh-keys \
@@ -35,6 +35,18 @@ jobs:
               --enable-app-routing \
               --tier free
 
+jobs:
+    build-acr-image-registry:
+        runs-on: ubuntu-latest
+        steps:
+
+        - name: 'Checkout this GitHub repo'
+          uses: actions/checkout@main
+
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v2
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
 
         - name: 'Install Azure CLI and create aks cluster'
           uses: azure/cli@v2
