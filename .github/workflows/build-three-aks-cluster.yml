@@ -25,6 +25,7 @@ jobs:
             inlineScript: |
               az aks create \
               --resource-group $RESOURCE_GROUP \
+              --generate-ssh-keys \
               --name $AKS_CLUSTER_NAME \
               --node-count 3 \
               --zones 1 2 3
@@ -32,8 +33,8 @@ jobs:
               --node-vm-size Standard_B2s \
               --network-plugin azure \
               --enable-app-routing \
-              --tier free \
-              --generate-ssh-keys
+              --tier free
+
 
         - name: 'Install Azure CLI and create aks cluster'
           uses: azure/cli@v2
