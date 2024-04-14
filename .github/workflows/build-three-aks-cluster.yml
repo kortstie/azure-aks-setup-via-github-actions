@@ -32,7 +32,8 @@ jobs:
               --node-vm-size Standard_B2s \
               --network-plugin azure \
               --enable-app-routing \
-              --tier free
+              --tier free \
+              --generate-ssh-keys
 
         - name: 'Install Azure CLI and create aks cluster'
           uses: azure/cli@v2
