@@ -1,44 +1,47 @@
-# Manual setup of an azure aks multi-zone cluster
+# Setup different stages of azure aks cluster via github actions
 
 ![title](images/title.jpg)
 
 ## Purpose of this repo
 
-- show how to set up a multi-zone azure aks cluster using the azure CLI
-- create an acr image registry and connect it to the aks cluster
-- setup a service principal to allow github actions to deploy images into the container registry
+Quick setup of three azure aks cluster with github actions to play around with things like azure fleet management.
 
 ## Prerequisites
 
 - azure account - you can test it for free, see https://azure.microsoft.com
 - working environment with all nessecary tools, [here is my setup guide](https://github.com/kortstie/k8s-working-environment)
 
-## Setup aks (azure k8s service)
-
-### Login to azure
-    az login
+## Setup resource group and service principal
 
 ### Set some variables to name our objects
 
-Change **project** to whatever you want - but not "demo", because demoacr is already in use
+Change **project** to whatever you want.
 
     export project=kortstie
     export resource_group=${project}rg
-    export cluster_name=${project}aks
-    export acr_name=${project}acr
     export location=germanywestcentral
+
+### Login to azure
+    az login
 
 ### Create resource group
     
     az group create --name=$resource_group --location=$location
 
+### Setup a service principal to automate things
+
+    groupId=$(az group show --name $resource_group --query id --output tsv)
+    az ad sp create-for-rbac --scope $groupId --role Contributor --json-auth
+
+**Save** this output, we will store it later in github secrets.
+    
 ### Create aks cluster
 
     az aks create \
     --resource-group $resource_group \
     --name $cluster_name \
     --node-count 3 \
-    --zones 1 2 3
+    --zones 1 2 3 \
     --generate-ssh-keys \
     --node-vm-size Standard_B2s \
     --network-plugin azure \
