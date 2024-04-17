@@ -102,3 +102,4 @@ Now we can interact with our brand-new k8s cluster - let's verify that the nodes
 ### Delete Resource Group (Delete EVERYTHING!)
 
    az group delete --resource-group $resource_group
+
